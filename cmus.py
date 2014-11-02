@@ -122,27 +122,59 @@ class CmusRemote(object):
 
         return ret
 
-    def timestring(self, status_bit=False, utf8=False):
-        status = self.status()
+    def status_string(self, status=None, utf8=False):
+        if not status:
+            status = self.status()
 
-        if status_bit:
-            if status['status'] == 'playing':
-                status_bit = '▶ ' if utf8 else  '> '
-            elif status['status'] == 'paused':
-                status_bit = '▮▮ ' if utf8 else  '| '
-            else:
-                status_bit = '◼ ' if utf8 else  '. '
+        status_string = ''
+
+        if status['status'] == 'playing':
+            status_string += '▶' if utf8 else  '>'
+        elif status['status'] == 'paused':
+            status_string += '▮▮' if utf8 else  '|'
         else:
-            status_bit = ''
+            status_string += '◼' if utf8 else  '.'
+
+        return status_string
+
+    def now_playing_string(self, status=None):
+        if not status:
+            status = self.status()
 
         try:
-            return '%s%02d:%02d / %02d:%02d' % (status_bit,
-                                                status['position'] / 60,
-                                                status['position'] % 60,
-                                                status['duration'] / 60,
-                                                status['duration'] % 60)
+            return '%s - %s' % (status['artist'], status['title'])
         except KeyError:
-            return '%s00:00 / 00:00' % status_bit
+            pass
+
+        try:
+            return '%s' % status['title']
+        except KeyError:
+            pass
+
+        try:
+            return os.path.splitext(os.path.basename(status['file']))[0]
+        except KeyError:
+            return ''
+
+    def time_string(self, status=None):
+        if not status:
+            status = self.status()
+
+        try:
+            return '%02d:%02d / %02d:%02d' % (status['position'] / 60,
+                                              status['position'] % 60,
+                                              status['duration'] / 60,
+                                              status['duration'] % 60)
+        except KeyError:
+            return '00:00 / 00:00'
+
+    def full_status_string(self, status=None, utf8=False):
+        if not status:
+            status = self.status()
+
+        return '%s  %s  [%s]' % (self.status_string(status=status, utf8=utf8),
+                                 self.now_playing_string(status=status),
+                                 self.time_string(status=status))
 
     def play(self):
         """
