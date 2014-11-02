@@ -64,22 +64,37 @@ class CmusRemote(object):
             raise e
 
     def is_playing(self):
+        """
+        Returns True if status is 'playing'.
+        """
         status = self._send_cmd('status')
         return re.match(regex.playing, status) != None
 
     def is_paused(self):
+        """
+        Returns True if status is 'paused'.
+        """
         status = self._send_cmd('status')
         return re.match(regex.paused, status) != None
 
     def is_stopped(self):
+        """
+        Returns True if status is 'stopped'.
+        """
         status = self._send_cmd('status')
         return re.match(regex.stopped, status) != None
 
     def is_paused_or_stopped(self):
+        """
+        Returns True if status is 'paused' or 'stopped'.
+        """
         status = self._send_cmd('status')
         return re.match(regex.paused_or_stopped, status) != None
 
     def status(self):
+        """
+        Returns current status as dict.
+        """
         status = self._send_cmd('status')
         ret = re.findall(regex.status, status, re.MULTILINE)
         ret = {i[1]: i[2] for i in ret}
@@ -130,6 +145,9 @@ class CmusRemote(object):
             return '%s00:00 / 00:00' % status_bit
 
     def play(self):
+        """
+        Toggles play.
+        """
         if self.is_paused_or_stopped():
             self._send_cmd('player-play')
             return self.is_playing()
@@ -140,12 +158,20 @@ class CmusRemote(object):
         return self.is_playing()
 
     def pause(self):
+        """
+        Pause player.
+        Returns False if player is already paused.
+        """
         if self.is_paused():
             return False
         self._send_cmd('player-pause')
         return self.is_paused()
 
     def stop(self):
+        """
+        Stop player.
+        Returns False if player is already stopped.
+        """
         if self.is_stopped():
             return False
         self._send_cmd('player-stop')
