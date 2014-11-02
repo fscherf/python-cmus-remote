@@ -22,7 +22,7 @@ class CmusConnectionError(Exception):
         super(CmusConnectionError, self).__init__(msg)
 
 
-class Cmus(object):
+class CmusRemote(object):
     def __init__(self, user=None):
         if user:
             self.socket_path = os.path.join(os.expanduser('~' + user),
