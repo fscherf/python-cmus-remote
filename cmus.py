@@ -115,7 +115,8 @@ class Cmus(object):
                 status_bit = '▶ ' if utf8 else  '> '
             elif status['status'] == 'paused':
                 status_bit = '▮▮ ' if utf8 else  '| '
-            status_bit = '◼ ' if utf8 else  '. '
+            else:
+                status_bit = '◼ ' if utf8 else  '. '
         else:
             status_bit = ''
 
